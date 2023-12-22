@@ -1,32 +1,27 @@
 package com.tourist.gateway.config;
-
-import com.tourist.gateway.security.AuthenticationFilter;
-import com.tourist.gateway.security.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+
 
 @Configuration
+@EnableWebFluxSecurity
 @EnableWebSecurity
-@EnableMethodSecurity
 public class GatewaySecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
-            "/auth/**",
+
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -38,26 +33,32 @@ public class GatewaySecurityConfig {
             "/webjars/**",
             "/swagger-ui.html"};
 
+    private static final String[] allowedGetApis = {
+            "/cache/clear",
+            "/restaurant/**",
+            "/filter/**",
+            "/cuisine/**",
+            "/feature/**",
+            "/book/**",
+            "/api/car/**",
+            "/currency/**"
+    };
+    private static final String[] allowedPostApis = {
+            "/api/car/book"
+    };
+
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
-                .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                                .permitAll()
-                                .requestMatchers(GET, "/cache/clear", "/restaurant/**",
-                                        "/filter/**", "/cuisine/**",
-                                        "/feature/**", "/book/**",
-                                        "/car/**", "/currency/**")
-                                .permitAll()
-                                // Bu hisse test ucun permitAll dir proda cixdiqdan sonra bu hisse silinecek Start
-                                .requestMatchers(POST, "/book").permitAll()
-                                // End
-                                .anyRequest()
-                                .authenticated()
+                .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(GET, WHITE_LIST_URL).permitAll()
+                        .pathMatchers(GET, allowedGetApis).permitAll()
+                        .anyExchange().authenticated()
                 )
-                .addFilterBefore(new AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
+                .formLogin(ServerHttpSecurity.FormLoginSpec::disable);
         return http.build();
     }
 

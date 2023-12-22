@@ -4,11 +4,9 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserPrincipal {
     private final String transactionNumber = UUID.randomUUID().toString();
     private String token;

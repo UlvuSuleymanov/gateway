@@ -2,5 +2,6 @@ server:
   port: 8090
 spring:
   main:
+    allow-circular-references: true
     allow-bean-definition-overriding: true
     web-application-type: reactive
