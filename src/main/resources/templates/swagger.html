@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Show Buttons Example</title>
+    <style>
+        /* Center the buttons in the div */
+        body {
+             margin: 0;
+            display: block;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Style for buttons */
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .button {
+            margin: 10px;
+            padding: 15px 20px;
+            font-size: 16px;
+            width: 115px;
+            border: none;
+            background-color: #6fbd26;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div style="width: 100%; height: 30%;">
+
+</div>
+<div style="width: 100%; text-align: center; display: block">
+    <h1>Custom UI for redirecting to Swagger UIs of microservices</h1>
+</div>
+
+<div class="button-container" >
+    <a th:each="item : ${url}" th:href="${item.getUrl()}">
+    <button  class="button" th:text="${item.getName()}"></button>
+    </a>
+</div>
+
+</body>
+</html>

@@ -1,13 +1,16 @@
 package com.tourist.gateway.config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.reactive.result.view.CsrfRequestDataValueProcessor;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.reactive.result.view.RequestDataValueProcessor;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,8 +24,11 @@ import static org.springframework.http.HttpMethod.POST;
 @EnableWebSecurity
 public class GatewaySecurityConfig {
 
-    private static final String[] WHITE_LIST_URL = {
-
+    private static final String[] allowedGetApis = {
+            "/api/v1/restaurant/**",
+            "/api/v1/car/**",
+            "/swagger",
+            "/swagger-ui/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",
@@ -32,11 +38,7 @@ public class GatewaySecurityConfig {
             "/configuration/security",
             "/swagger-ui/**",
             "/webjars/**",
-            "/swagger-ui.html"};
-
-    private static final String[] allowedGetApis = {
-            "/api/v1/restaurant/**",
-            "/api/v1/car/**",
+            "/swagger-ui.html"
 
     };
     private static final String[] allowedPostApis = {
@@ -49,9 +51,8 @@ public class GatewaySecurityConfig {
         http
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(GET, WHITE_LIST_URL).permitAll()
                         .pathMatchers(GET, allowedGetApis).permitAll()
-                        .pathMatchers(POST,allowedPostApis).permitAll()
+                        .pathMatchers(POST, allowedPostApis).permitAll()
                         .anyExchange().authenticated()
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
