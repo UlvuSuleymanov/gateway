@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 
 @Configuration
@@ -34,17 +35,12 @@ public class GatewaySecurityConfig {
             "/swagger-ui.html"};
 
     private static final String[] allowedGetApis = {
-            "/cache/clear",
-            "/restaurant/**",
-            "/filter/**",
-            "/cuisine/**",
-            "/feature/**",
-            "/book/**",
-            "/api/car/**",
-            "/currency/**"
+            "/api/v1/restaurant/**",
+            "/api/v1/car/**",
+
     };
     private static final String[] allowedPostApis = {
-            "/api/car/book"
+            "/api/v1/auth/**"
     };
 
 
@@ -55,6 +51,7 @@ public class GatewaySecurityConfig {
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(GET, WHITE_LIST_URL).permitAll()
                         .pathMatchers(GET, allowedGetApis).permitAll()
+                        .pathMatchers(POST,allowedPostApis).permitAll()
                         .anyExchange().authenticated()
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)

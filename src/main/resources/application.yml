@@ -5,3 +5,8 @@ spring:
     allow-circular-references: true
     allow-bean-definition-overriding: true
     web-application-type: reactive
+services:
+  url:
+    auth-url: http://localhost:8081
+    car-url: http://localhost:8083
+    restaurant-url: http://localhost:8082
